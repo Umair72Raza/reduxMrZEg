@@ -4,12 +4,39 @@ const { createSlice, createAsyncThunk } = require('@reduxjs/toolkit')
 export const fetchData = createAsyncThunk('api/fetchData',async(_,{rejectWithValue}) => {
     try {
         const data = await axios.get('http://localhost:8000/visitor/getvisitors')
-        console.log(data);
+        console.log("Data ",data);
         return data;
+        //console.log()
     } catch (error) {
         return rejectWithValue(error) //pass error to the reject of promise
     }
-})
+});
+
+// Define the async action using createAsyncThunk
+export const fetchUserByID = createAsyncThunk('api/fetchUserByID', async (userId, { rejectWithValue }) => {
+  try {
+    const response = await axios.get(`http://localhost:8000/visitor/getByID/${userId}`);
+    const user = response.data;
+    return user;
+  } catch (error) {
+    // Use rejectWithValue to pass the error to the promise's rejection
+    return rejectWithValue(error);
+  }
+});
+
+
+// export const fetchData = createAsyncThunk('api/fetchData', async()=>{
+//     try {
+//         const data = await axios.get('http://localhost:8000/visitor/getvisitors');
+//         console.log(data);
+//         return data;
+
+//     } catch (error) {
+//         console.log("error", error);
+//     }
+// })
+
+
 const apiSlice = createSlice({
     name: 'api',
     initialState: {
@@ -33,7 +60,20 @@ const apiSlice = createSlice({
         
             state.status = "Data rendering rejected"
             state.error = action.payload
-        })
+        }).addCase(fetchUserByID.pending,(state)=>{
+        
+            state.status = 'loading'              
+          })
+          .addCase(fetchUserByID.fulfilled,(state,action)=>{
+              state.status = "data loaded successfully"
+              state.data = action.payload
+          })
+          .addCase(fetchUserByID.rejected,(state,action)=>{
+          
+              state.status = "Data rendering rejected"
+              state.error = action.payload
+          })
+        
     },
 });
 
