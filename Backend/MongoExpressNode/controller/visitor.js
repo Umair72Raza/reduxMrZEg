@@ -43,7 +43,19 @@ const updateVisitor = async (req, res, next) => {
     }
   };
   
+const getVisitorById = async(req,res,next) => {
+  try {
+    const theDataById = await Visitor.findById(req.params.id);
+    if(!theDataById)
+    {
+      return res.status(404).json({message: "Data NOT FOUND"})
+   }
+   res.json(theDataById);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
 
-//use ID of user to get the info of order placed by the user
 
-module.exports = {createAVisitor,getAllVisitors,updateVisitor};
+
+module.exports = {createAVisitor,getAllVisitors,updateVisitor, getVisitorById};
